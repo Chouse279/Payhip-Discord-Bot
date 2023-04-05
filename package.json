@@ -1,0 +1,14 @@
+{
+    "name": "payhip-discord-bot",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "test": "cross-env CLICOLOR_FORCE=1 LOG=ln,gr go run . -token YOUR_TOKEN",
+        "dev": "cross-env CLICOLOR_FORCE=1 LOG=ln,debug,gr nodemon --exec go run -race . --signal SIGTERM -e go,",
+        "tidy": "go mod tidy"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7",
+        "cross-env": "^7.0.3"
+    }
+}
