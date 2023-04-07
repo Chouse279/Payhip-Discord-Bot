@@ -5,7 +5,15 @@
     "scripts": {
         "test": "cross-env CLICOLOR_FORCE=1 LOG=ln,gr go run . -token YOUR_TOKEN",
         "dev": "cross-env CLICOLOR_FORCE=1 LOG=ln,debug,gr nodemon --exec go run -race . --signal SIGTERM -e go,",
-        "tidy": "go mod tidy"
+        "tidy": "go mod tidy",
+        "build": "cross-env yarn build_linux && yarn build_windows && yarn build_macos && yarn build_macos_arm64 && yarn build_arm && yarn build_arm64 && yarn build_rpi",
+        "build_windows": "cross-env GOOS=windows GOARCH=amd64 go build -o bin/payhip-discord-bot-windows-amd64.exe",
+        "build_linux": "cross-env GOOS=linux GOARCH=amd64 go build -o bin/payhip-discord-bot-linux-amd64",
+        "build_macos": "cross-env GOOS=darwin GOARCH=amd64 go build -o bin/payhip-discord-bot-macos-amd64",
+        "build_macos_arm64": "cross-env GOOS=darwin GOARCH=arm64 go build -o bin/payhip-discord-bot-macos-arm64",
+        "build_arm": "cross-env GOOS=linux GOARCH=arm go build -o bin/payhip-discord-bot-linux-arm",
+        "build_arm64": "cross-env GOOS=linux GOARCH=arm64 go build -o bin/payhip-discord-bot-linux-arm64",
+        "build_rpi": "cross-env GOOS=linux GOARCH=arm GOARM=6 go build -o bin/payhip-discord-bot-rpi-armv6"
     },
     "devDependencies": {
         "nodemon": "^2.0.7",

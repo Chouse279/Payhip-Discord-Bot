@@ -14,6 +14,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// Payhip Bot Version and stuff
+var Version = "1.0.0"
+var Maker = "McHauge (mc-hauge@hotmail.com)"
+
 // Bot parameters
 var (
 	PayhipToken    = flag.String("payhip", "", "Payhip API Token")
@@ -257,6 +261,8 @@ func init() {
 }
 
 func main() {
+	log.Printf("Payhip Discord Bot Version %s, Made by %s", Version, Maker)
+
 	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Printf("Logged in as: %v#%v", s.State.User.Username, s.State.User.Discriminator)
 	})

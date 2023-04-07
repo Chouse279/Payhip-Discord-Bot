@@ -7,9 +7,13 @@ To run the bot:
  - run ```go install```
  - run ```go mod tidy```
 
-Then run the program:
+Then run the program from source:
 
 ```go run main.go -payhip YOUR_PAYHIP_APIKEY -token YOUR_DISCORD_BOT_TOKEN -guild DISCORD_SERVER_ID -role DISCORD_SERVER_ROLE_ID```
+
+If you download a release pre-compiled release versiom for you system use this, just change the file in front to match, your downloaded file:
+
+```./payhip-discord-bot-windows-amd64.exe -payhip YOUR_PAYHIP_APIKEY -token YOUR_DISCORD_BOT_TOKEN -guild DISCORD_SERVER_ID -role DISCORD_SERVER_ROLE_ID```
 
 When it's running you will see something like this in the console:
 
