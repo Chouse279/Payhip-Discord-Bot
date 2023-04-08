@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "test": "cross-env CLICOLOR_FORCE=1 LOG=ln,gr go run . -token YOUR_TOKEN",
+        "test": "cross-env CLICOLOR_FORCE=1 LOG=ln,gr go run .",
         "dev": "cross-env CLICOLOR_FORCE=1 LOG=ln,debug,gr nodemon --exec go run -race . --signal SIGTERM -e go,",
         "tidy": "go mod tidy",
         "build": "cross-env yarn build_linux && yarn build_windows && yarn build_macos && yarn build_macos_arm64 && yarn build_arm && yarn build_arm64 && yarn build_rpi",

@@ -5,17 +5,18 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/mchauge/payhip-discord-bot/config"
+	log "github.com/s00500/env_logger"
 )
 
 // Payhip Bot Version and stuff
-var Version = "1.0.0"
+var Version = "1.0.1"
 var Maker = "McHauge (mc-hauge@hotmail.com)"
 
 // Bot parameters
@@ -102,8 +103,7 @@ var (
 				},
 			})
 
-			if err != nil {
-				log.Print(err)
+			if log.Should(err) {
 				return
 			}
 		},
@@ -114,7 +114,7 @@ var (
 			// Verify the license
 			verified, err := VerifyLicense(product, license, *PayhipToken)
 			if err != nil {
-				log.Printf("Error verifying license: %v", err)
+				log.Errorf("Verifying license: %v", err)
 				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 					Type: discordgo.InteractionResponseChannelMessageWithSource,
 					Data: &discordgo.InteractionResponseData{
@@ -134,9 +134,9 @@ var (
 				},
 			})
 
-			log.Print("Vertification of license: " + verified + " for user: " + i.Member.User.Username + "#" + i.Member.User.Discriminator)
+			log.Info("Vertification of license: " + verified + " for user: " + i.Member.User.Username + "#" + i.Member.User.Discriminator)
 			if verified == "Success" {
-				log.Print("Gave User: " + i.Member.User.Username + "#" + i.Member.User.Discriminator + " the Verified role")
+				log.Info("Gave User: " + i.Member.User.Username + "#" + i.Member.User.Discriminator + " the Verified role")
 				s.GuildMemberRoleAdd(i.GuildID, i.Member.User.ID, *RoleID)
 			}
 
@@ -188,8 +188,7 @@ var (
 					},
 				},
 			})
-			if err != nil {
-				log.Print(err)
+			if log.Should(err) {
 				return
 			}
 		},
@@ -204,7 +203,7 @@ var (
 			// Verify the license
 			verified, err := VerifyLicense(product, license, *PayhipToken)
 			if err != nil {
-				log.Printf("Error verifying license: %v", err)
+				log.Errorf("Error verifying license: %v", err)
 				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 					Type: discordgo.InteractionResponseChannelMessageWithSource,
 					Data: &discordgo.InteractionResponseData{
@@ -224,9 +223,9 @@ var (
 				},
 			})
 
-			log.Print("Vertification of license: " + verified + " for user: " + i.Member.User.Username + "#" + i.Member.User.Discriminator)
+			log.Info("Vertification of license: " + verified + " for user: " + i.Member.User.Username + "#" + i.Member.User.Discriminator)
 			if verified == "Success" {
-				log.Print("Gave User: " + i.Member.User.Username + "#" + i.Member.User.Discriminator + " the Verified role")
+				log.Info("Gave User: " + i.Member.User.Username + "#" + i.Member.User.Discriminator + " the Verified role")
 				s.GuildMemberRoleAdd(i.GuildID, i.Member.User.ID, *RoleID)
 			}
 		},
@@ -234,7 +233,20 @@ var (
 )
 
 func init() {
+	log.Infof("Payhip Discord Bot Version %s, Made by %s", Version, Maker)
+
 	flag.Parse()
+	if *BotToken == "" {
+		log.Warn("No bot token provided, using config file instead")
+		config.ReadConfig()
+
+		*PayhipToken = config.Config.PayhipToken
+		*BotToken = config.Config.BotToken
+		*RoleID = config.Config.RoleID
+		*PayhipToken = config.Config.PayhipToken
+		*GuildID = config.Config.GuildID
+		*RemoveCommands = config.Config.RemoveCommands
+	}
 
 	var err error
 	s, err = discordgo.New("Bot " + *BotToken)
@@ -261,17 +273,15 @@ func init() {
 }
 
 func main() {
-	log.Printf("Payhip Discord Bot Version %s, Made by %s", Version, Maker)
-
 	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
-		log.Printf("Logged in as: %v#%v", s.State.User.Username, s.State.User.Discriminator)
+		log.Infof("Logged in as: %v#%v", s.State.User.Username, s.State.User.Discriminator)
 	})
 	err := s.Open()
 	if err != nil {
 		log.Fatalf("Cannot open the session: %v", err)
 	}
 
-	log.Println("Adding commands...")
+	log.Infoln("Adding commands...")
 	registeredCommands := make([]*discordgo.ApplicationCommand, len(commands))
 	for i, v := range commands {
 		cmd, err := s.ApplicationCommandCreate(s.State.User.ID, *GuildID, v)
@@ -285,11 +295,11 @@ func main() {
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt)
-	log.Println("Press Ctrl+C to exit")
+	log.Infoln("Press Ctrl+C to exit")
 	<-stop
 
 	if *RemoveCommands {
-		log.Println("Removing commands...")
+		log.Infoln("Removing commands...")
 		for _, v := range registeredCommands {
 			err := s.ApplicationCommandDelete(s.State.User.ID, *GuildID, v.ID)
 			if err != nil {
@@ -298,7 +308,7 @@ func main() {
 		}
 	}
 
-	log.Println("Gracefully shutting down.")
+	log.Infoln("Gracefully shutting down.")
 }
 
 func VerifyLicense(product string, license string, PayhipToken string) (string, error) {
