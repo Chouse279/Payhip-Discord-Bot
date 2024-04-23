@@ -23,3 +23,6 @@ token.txt
 
 # Generated file that stores the version number and build time
 gitinfo.go
+
+# Include version information on `git archive'
+/internal/version.go export-subst

@@ -12,6 +12,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/mchauge/payhip-discord-bot/config"
+	"github.com/mchauge/payhip-discord-bot/version"
 	log "github.com/s00500/env_logger"
 )
 
@@ -27,6 +28,10 @@ var (
 	GuildID        = flag.String("guild", "", "Test guild ID. If not passed - bot registers commands globally")
 	RoleID         = flag.String("role", "", "Role ID to give to verified users")
 	RemoveCommands = flag.Bool("rmcmd", true, "Remove all commands after shutdowning or not")
+
+	// Version flag
+	Version        = flag.Bool("version", false, "Print version and exit")
+	v              = flag.Bool("v", false, "Print version and exit")
 )
 
 var s *discordgo.Session
@@ -239,9 +244,19 @@ func init() {
 		branch = "- branch: " + gitBranch + " "
 	}
 
+	flag.Parse()
+	if *Version || *v {
+		// Version contains version and Git commit information.
+		//
+		// The placeholders are replaced on `git archive` using the `export-subst` attribute.
+		var intVersion = version.Version(fmt.Sprintf("%s (%s) %s", gitTag, gitRevision, branch), "$Format:%(describe)$", "$Format:%H$")
+
+		intVersion.Print(maker)
+		os.Exit(0)
+	}
+
 	log.Infof("Payhip Discord bot by %s, version %s (%s) %s", maker, gitTag, gitRevision, branch)
 
-	flag.Parse()
 	if *BotToken == "" {
 		log.Warn("No bot token provided, using config file instead")
 		config.ReadConfig()
