@@ -20,3 +20,6 @@ config.json
 token.txt
 /node_modules
 /bin
+
+# Generated file that stores the version number and build time
+gitinfo.go

@@ -15,9 +15,10 @@ import (
 	log "github.com/s00500/env_logger"
 )
 
-// Payhip Bot Version and stuff
-var Version = "1.0.1"
-var Maker = "McHauge (mc-hauge@hotmail.com)"
+//go:generate sh injectGitVars.sh
+
+// Payhip Bot made by:
+var maker = "McHauge (mc-hauge@hotmail.com)"
 
 // Bot parameters
 var (
@@ -233,7 +234,12 @@ var (
 )
 
 func init() {
-	log.Infof("Payhip Discord Bot Version %s, Made by %s", Version, Maker)
+	branch := ""
+	if gitBranch != "master" && gitBranch != "main" {
+		branch = "- branch: " + gitBranch + " "
+	}
+
+	log.Infof("Payhip Discord bot by %s, version %s (%s) %s", maker, gitTag, gitRevision, branch)
 
 	flag.Parse()
 	if *BotToken == "" {
