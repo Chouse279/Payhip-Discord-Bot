@@ -33,7 +33,8 @@ func ReadConfig() {
 			RemoveCommands: true,
 		}
 		helpers.UpdateJson(&Config, path, "config.json")
-		log.Fatal("Config is empty or missing info please fill your info in the config.json file")
+		log.Error("Config is empty or missing info please fill your info in the config.json file")
+		return
 	}
 
 	log.Warn("Config file loaded")
