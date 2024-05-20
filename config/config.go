@@ -79,8 +79,18 @@ func ReadEnvConfig() {
 
 	// Check if all values are filled
 	if Config.PayhipToken == "" || Config.BotToken == "" || Config.GuildID == "" || Config.RoleID == "" {
-		log.Fatal("Config is empty or missing info please fill your info in the .env file")
+		log.Error("Config is empty or missing info please fill your info in the .env file")
+		return
 	}
 
 	log.Warn("Env file loaded")
+}
+
+// Check for missing config values
+func ConfigIsValid() bool{
+	if Config.PayhipToken == "" || Config.BotToken == "" || Config.GuildID == "" || Config.RoleID == "" {
+		log.Error("Config is empty or missing info please fill your info in the config.json file or the .env file")
+		return false
+	}
+	return true
 }

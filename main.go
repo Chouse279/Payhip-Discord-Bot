@@ -30,8 +30,8 @@ var (
 	RemoveCommands = flag.Bool("rmcmd", true, "Remove all commands after shutdowning or not")
 
 	// Version flag
-	Version        = flag.Bool("version", false, "Print version and exit")
-	v              = flag.Bool("v", false, "Print version and exit")
+	Version = flag.Bool("version", false, "Print version and exit")
+	v       = flag.Bool("v", false, "Print version and exit")
 )
 
 var s *discordgo.Session
@@ -262,12 +262,16 @@ func init() {
 		config.ReadConfig()
 		config.ReadEnvConfig() // override config file with .env file if it has values
 
-		*PayhipToken = config.Config.PayhipToken
-		*BotToken = config.Config.BotToken
-		*RoleID = config.Config.RoleID
-		*PayhipToken = config.Config.PayhipToken
-		*GuildID = config.Config.GuildID
-		*RemoveCommands = config.Config.RemoveCommands
+		if config.ConfigIsValid() {
+			*PayhipToken = config.Config.PayhipToken
+			*BotToken = config.Config.BotToken
+			*RoleID = config.Config.RoleID
+			*PayhipToken = config.Config.PayhipToken
+			*GuildID = config.Config.GuildID
+			*RemoveCommands = config.Config.RemoveCommands
+		} else {
+			log.Fatalf("Invalid bot parameters, please check your config or env file")
+		}
 	}
 
 	var err error

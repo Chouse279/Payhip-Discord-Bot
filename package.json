@@ -14,7 +14,9 @@
         "build_macos_arm64": "cross-env GOOS=darwin GOARCH=arm64 go build -o bin/payhip-discord-bot-macos-arm64",
         "build_arm": "cross-env GOOS=linux GOARCH=arm go build -o bin/payhip-discord-bot-linux-arm",
         "build_arm64": "cross-env GOOS=linux GOARCH=arm64 go build -o bin/payhip-discord-bot-linux-arm64",
-        "build_rpi": "cross-env GOOS=linux GOARCH=arm GOARM=6 go build -o bin/payhip-discord-bot-rpi-armv6"
+        "build_rpi": "cross-env GOOS=linux GOARCH=arm GOARM=6 go build -o bin/payhip-discord-bot-rpi-armv6",
+        "build_docker": "go generate && docker build -t payhip-discord-bot:stable .",
+        "build_docker_beta": "go generate && docker build -t payhip-discord-bot:beta ."
     },
     "devDependencies": {
         "nodemon": "^2.0.7",
