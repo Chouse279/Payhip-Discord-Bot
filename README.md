@@ -17,6 +17,16 @@ If you download a release pre-compiled release version for your system use this,
 
 If you don't specify anything when running the program, it will generate a config.json file for you that you can fill out with the relevant info, and then that will be used instead.
 
+If you would rather use a .env file, then sure, go ahead anf make one, then the program will use that instead og the config.json file an empty .env should look like this:
+
+```
+PAYHIP_TOKEN=
+BOT_TOKEN=
+GUILD_ID=
+ROLE_ID=
+REMOVE_COMMANDS=
+```
+
 When it's running you will see something like this in the console:
 
 ```

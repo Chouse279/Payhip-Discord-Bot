@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect

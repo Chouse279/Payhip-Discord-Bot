@@ -260,6 +260,7 @@ func init() {
 	if *BotToken == "" {
 		log.Warn("No bot token provided, using config file instead")
 		config.ReadConfig()
+		config.ReadEnvConfig() // override config file with .env file if it has values
 
 		*PayhipToken = config.Config.PayhipToken
 		*BotToken = config.Config.BotToken
