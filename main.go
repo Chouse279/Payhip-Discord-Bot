@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -37,12 +37,12 @@ var (
 var s *discordgo.Session
 
 var (
-	integerOptionMinValue          = 1.0
-	dmPermission                   = false
-	defaultMemberPermissions int64 = discordgo.PermissionManageServer
+	// integerOptionMinValue          = 1.0
+	// dmPermission                   = false
+	// defaultMemberPermissions int64 = discordgo.PermissionManageServer
 
 	commands = []*discordgo.ApplicationCommand{
-		{
+		{ // Spawnverify command
 			Name:        "spawnverify",
 			Description: "Spawn a vertify command",
 			Type:        discordgo.ChatApplicationCommand,
@@ -108,10 +108,7 @@ var (
 					Flags:   discordgo.MessageFlagsEphemeral,
 				},
 			})
-
-			if log.Should(err) {
-				return
-			}
+			log.Should(err)
 		},
 		"verify-cli": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			product := i.ApplicationCommandData().Options[0].StringValue()
@@ -128,24 +125,27 @@ var (
 						Flags:   discordgo.MessageFlagsEphemeral,
 					},
 				})
-				return
+			} else {
+				// Send the response
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: "License vertification: " + verified,
+						Flags:   discordgo.MessageFlagsEphemeral,
+					},
+				})
+
+				Username := i.Member.User.Username
+				if i.Member.User.Discriminator != "0" {
+					Username = i.Member.User.Username + "#" + i.Member.User.Discriminator
+				}
+
+				log.Info("Vertification of license: " + verified + " for user: " + Username)
+				if verified == "Success" {
+					log.Info("Gave User: " + Username + " the Verified role")
+					s.GuildMemberRoleAdd(i.GuildID, i.Member.User.ID, *RoleID)
+				}
 			}
-
-			// Send the response
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "License vertification: " + verified,
-					Flags:   discordgo.MessageFlagsEphemeral,
-				},
-			})
-
-			log.Info("Vertification of license: " + verified + " for user: " + i.Member.User.Username + "#" + i.Member.User.Discriminator)
-			if verified == "Success" {
-				log.Info("Gave User: " + i.Member.User.Username + "#" + i.Member.User.Discriminator + " the Verified role")
-				s.GuildMemberRoleAdd(i.GuildID, i.Member.User.ID, *RoleID)
-			}
-
 		},
 		"ping": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -194,9 +194,7 @@ var (
 					},
 				},
 			})
-			if log.Should(err) {
-				return
-			}
+			log.Should(err)
 		},
 	}
 
@@ -217,22 +215,44 @@ var (
 						Flags:   discordgo.MessageFlagsEphemeral,
 					},
 				})
-				return
-			}
+			} else {
 
-			// Send the response
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "License Vertification: " + verified,
-					Flags:   discordgo.MessageFlagsEphemeral,
-				},
-			})
+				Username := i.Member.User.Username
+				if i.Member.User.Discriminator != "0" {
+					Username = i.Member.User.Username + "#" + i.Member.User.Discriminator
+				}
 
-			log.Info("Vertification of license: " + verified + " for user: " + i.Member.User.Username + "#" + i.Member.User.Discriminator)
-			if verified == "Success" {
-				log.Info("Gave User: " + i.Member.User.Username + "#" + i.Member.User.Discriminator + " the Verified role")
-				s.GuildMemberRoleAdd(i.GuildID, i.Member.User.ID, *RoleID)
+				if verified == "Success" {
+					log.Info("Vertification of license: " + verified + " for user: " + Username)
+					err := s.GuildMemberRoleAdd(i.GuildID, i.Member.User.ID, *RoleID)
+					if !log.Should(err) {
+						log.Info("Gave User: " + Username + " the Verified role")
+						verified = "Success"
+					} else {
+						log.Error("Failed to give User: " + Username + " the Verified role")
+						verified = "Valid license but failed to give the Verified role"
+					}
+
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "License Vertification: " + verified,
+							Flags:   discordgo.MessageFlagsEphemeral,
+						},
+					})
+
+				} else {
+					log.Info("Failed to Vertify license: " + verified + " for user: " + Username)
+
+					// Send the response
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "License Vertification: " + verified,
+							Flags:   discordgo.MessageFlagsEphemeral,
+						},
+					})
+				}
 			}
 		},
 	}
@@ -283,14 +303,26 @@ func init() {
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		switch i.Type {
 		case discordgo.InteractionApplicationCommand:
+			if i.GuildID != *GuildID {
+				log.Warnf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+			}
+
 			if h, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
 				h(s, i)
 			}
 		case discordgo.InteractionMessageComponent:
+			if i.GuildID != *GuildID {
+				log.Warnf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+			}
+
 			if h, ok := componentsHandlers[i.MessageComponentData().CustomID]; ok {
 				h(s, i)
 			}
 		case discordgo.InteractionModalSubmit:
+			if i.GuildID != *GuildID {
+				log.Warnf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+			}
+
 			if h, ok := modalHandlers[i.ModalSubmitData().CustomID]; ok {
 				h(s, i)
 			}
@@ -348,15 +380,19 @@ func VerifyLicense(product string, license string, PayhipToken string) (string, 
 
 	resp, err := netClient.Do(req)
 	if err != nil {
-		return "", err
+		log.Should(err)
+		return "Payhip API Error", err
 	}
 
 	data := message{}
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	json.Unmarshal([]byte(body), &data)
 	defer resp.Body.Close()
 
-	if data.Data.Buyer_email != "" {
+	log.Warnln(log.Indent(data))
+
+	// Needs to be a valid key and have a buyer email
+	if data.Data.Enabled && data.Data.Buyer_email != "" {
 		return "Success", nil
 	}
 	return "Failed", nil
