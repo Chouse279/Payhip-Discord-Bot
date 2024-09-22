@@ -392,7 +392,7 @@ func VerifyLicense(product string, license string, PayhipToken string) (string, 
 	json.Unmarshal([]byte(body), &data)
 	defer resp.Body.Close()
 
-	log.Warnln(log.Indent(data))
+	log.Debugln(log.Indent(data))
 
 	// Needs to be a valid key and have a buyer email
 	if data.Data.Enabled && data.Data.Buyer_email != "" {
