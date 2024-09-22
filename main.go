@@ -304,7 +304,8 @@ func init() {
 		switch i.Type {
 		case discordgo.InteractionApplicationCommand:
 			if i.GuildID != *GuildID {
-				log.Warnf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+				log.Debugf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+				return
 			}
 
 			if h, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
@@ -312,7 +313,8 @@ func init() {
 			}
 		case discordgo.InteractionMessageComponent:
 			if i.GuildID != *GuildID {
-				log.Warnf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+				log.Debugf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+				return
 			}
 
 			if h, ok := componentsHandlers[i.MessageComponentData().CustomID]; ok {
@@ -320,7 +322,8 @@ func init() {
 			}
 		case discordgo.InteractionModalSubmit:
 			if i.GuildID != *GuildID {
-				log.Warnf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+				log.Debugf("Ignoring command from different guild, expected: %v, got: %v", *GuildID, i.GuildID)
+				return
 			}
 
 			if h, ok := modalHandlers[i.ModalSubmitData().CustomID]; ok {
