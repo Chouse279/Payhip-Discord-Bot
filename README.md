@@ -40,3 +40,5 @@ Create a text channel and run the action ```/spawnverify``` that will give you a
 If you wanna do it via a chat message instead you can use the: ```/verify-cli``` command instead
 
 To close the bot simply press Ctrl+C then it will close itself again
+
+Initial idea and insperation for this bot comes from the intergration of the Gumroad bot: [GumCord](https://github.com/benaclejames/GumCord)
