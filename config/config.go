@@ -18,12 +18,12 @@ type configStruct struct {
 	GuildID        string `json:"GuildID"`
 	RoleID         string `json:"RoleID"`
 	RemoveCommands bool   `json:"RemoveCommands"`
-	MaxLicenseUses int  `json:"MaxLicenseUses"`
+	MaxLicenseUses int    `json:"MaxLicenseUses"`
 }
 
 func ReadConfig() {
 	path, err := os.Getwd()
-	log.Should(err)
+	log.ShouldWarn(err)
 	helpers.ReadJson(&Config, path, "config.json")
 
 	if Config == nil || Config.PayhipToken == "" || Config.BotToken == "" || Config.GuildID == "" || Config.RoleID == "" {
@@ -50,7 +50,7 @@ func ReadEnvConfig() {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		log.Error("Error loading .env file, skipping...")
+		log.Warn("Error loading .env file, skipping...")
 		return
 	}
 
