@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/mchauge/payhip-discord-bot/helpers"
@@ -17,6 +18,7 @@ type configStruct struct {
 	GuildID        string `json:"GuildID"`
 	RoleID         string `json:"RoleID"`
 	RemoveCommands bool   `json:"RemoveCommands"`
+	MaxLicenseUses int  `json:"MaxLicenseUses"`
 }
 
 func ReadConfig() {
@@ -30,7 +32,8 @@ func ReadConfig() {
 			BotToken:       "",
 			GuildID:        "",
 			RoleID:         "",
-			RemoveCommands: true,
+			RemoveCommands: false,
+			MaxLicenseUses: 0, // 0 means unlimited, and will not add uses to the license key
 		}
 		helpers.UpdateJson(&Config, path, "config.json")
 		log.Error("Config is empty or missing info please fill your info in the config.json file")
@@ -51,6 +54,11 @@ func ReadEnvConfig() {
 		return
 	}
 
+	maxlicense, err := strconv.Atoi(os.Getenv("MAX_LICENSE_USES"))
+	if err != nil {
+		maxlicense = 0
+	}
+
 	// Get the environment variables
 	LocalConfig := &configStruct{
 		PayhipToken:    os.Getenv("PAYHIP_TOKEN"),
@@ -58,6 +66,7 @@ func ReadEnvConfig() {
 		GuildID:        os.Getenv("GUILD_ID"),
 		RoleID:         os.Getenv("ROLE_ID"),
 		RemoveCommands: os.Getenv("REMOVE_COMMANDS") == "true",
+		MaxLicenseUses: int(maxlicense),
 	}
 
 	// store non empty values
@@ -76,6 +85,9 @@ func ReadEnvConfig() {
 	if LocalConfig.RemoveCommands { // Only set to true if it is true
 		Config.RemoveCommands = LocalConfig.RemoveCommands
 	}
+	if LocalConfig.MaxLicenseUses != 0 { // Only set if it is not 0
+		Config.MaxLicenseUses = LocalConfig.MaxLicenseUses
+	}
 
 	// Check if all values are filled
 	if Config.PayhipToken == "" || Config.BotToken == "" || Config.GuildID == "" || Config.RoleID == "" {
@@ -87,7 +99,7 @@ func ReadEnvConfig() {
 }
 
 // Check for missing config values
-func ConfigIsValid() bool{
+func ConfigIsValid() bool {
 	if Config.PayhipToken == "" || Config.BotToken == "" || Config.GuildID == "" || Config.RoleID == "" {
 		log.Error("Config is empty or missing info please fill your info in the config.json file or the .env file")
 		return false

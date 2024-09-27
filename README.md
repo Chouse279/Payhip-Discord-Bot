@@ -4,6 +4,7 @@ Open source Discord bot for Payhip, providing a way to automate sale verificatio
 ***This app is in no way associated with [Payhip](https://payhip.com/), the company itself, and only relies on the public license API provided***
 
 To run the bot:
+
  - Install Golang: https://go.dev/dl/
  - Go to the folder with the main.go file and open a terminal
  - run ```go install```
@@ -27,6 +28,7 @@ BOT_TOKEN=
 GUILD_ID=
 ROLE_ID=
 REMOVE_COMMANDS=
+MAX_LICENSE_USES=
 ```
 
 When it's running you will see something like this in the console:
@@ -43,7 +45,8 @@ If you wanna do it via a chat message instead you can use the: ```/verify-cli```
 
 To close the bot simply press Ctrl+C then it will close itself again
 
-Usefull links: 
+Usefull links:
+
 - [Discord Developer](https://discord.com/developers/applications)
 - [Discord Bot Setup Guide](https://discordpy.readthedocs.io/en/stable/discord.html)
 - [Payhip License Key Setup & API](https://help.payhip.com/article/114-software-license-keys)

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -115,7 +116,7 @@ var (
 			license := i.ApplicationCommandData().Options[1].StringValue()
 
 			// Verify the license
-			verified, err := VerifyLicense(product, license, *PayhipToken)
+			verified, err := VerifyLicense(product, license, *PayhipToken, config.Config.MaxLicenseUses)
 			if err != nil {
 				log.Errorf("Verifying license: %v", err)
 				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -205,7 +206,7 @@ var (
 			license := data.Components[1].(*discordgo.ActionsRow).Components[0].(*discordgo.TextInput).Value
 
 			// Verify the license
-			verified, err := VerifyLicense(product, license, *PayhipToken)
+			verified, err := VerifyLicense(product, license, *PayhipToken, config.Config.MaxLicenseUses)
 			if err != nil {
 				log.Errorf("Error verifying license: %v", err)
 				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -372,7 +373,7 @@ func main() {
 	log.Infoln("Gracefully shutting down.")
 }
 
-func VerifyLicense(product string, license string, PayhipToken string) (string, error) {
+func VerifyLicense(product string, license string, PayhipToken string, MaxLicenseUses int) (string, error) {
 	// Create socket
 	netClient := &http.Client{
 		Timeout: time.Second * 5,
@@ -392,13 +393,62 @@ func VerifyLicense(product string, license string, PayhipToken string) (string, 
 	json.Unmarshal([]byte(body), &data)
 	defer resp.Body.Close()
 
-	log.Debugln(log.Indent(data))
+	log.Warnln(log.Indent(data))
 
 	// Needs to be a valid key and have a buyer email
 	if data.Data.Enabled && data.Data.Buyer_email != "" {
+
+		// Check if the license key has been used more than the max allowed uses
+		if MaxLicenseUses != 0 && data.Data.Uses > MaxLicenseUses-1 {
+			return "Max uses reached", nil
+		}
+
+		// Add usage to the license key if it's not unlimited
+		if MaxLicenseUses != 0 {
+			msg, err := data.AddUsage(product, license, PayhipToken)
+			if err != nil {
+				return "Failed to add usage", err
+			}
+
+			if msg != "" {
+				return msg, nil
+			}
+		}
+
 		return "Success", nil
 	}
 	return "Failed", nil
+}
+
+func (m message) AddUsage(product string, license string, PayhipToken string) (string, error) {
+
+	// Create socket
+	netClient := &http.Client{
+		Timeout: time.Second * 5,
+	}
+
+	req, _ := http.NewRequest("PUT", "https://payhip.com/api/v1/license/usage", strings.NewReader(fmt.Sprintf("product_link=%s&license_key=%s", product, license)))
+	req.Header.Add("payhip-api-key", PayhipToken)
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := netClient.Do(req)
+	if err != nil {
+		log.Should(err)
+		return "Add Usage: Payhip API Error", err
+	}
+
+	data := message{}
+	body, _ := io.ReadAll(resp.Body)
+	json.Unmarshal([]byte(body), &data)
+	defer resp.Body.Close()
+
+	log.Warnln("Add Usage: ", log.Indent(data))
+
+	if data.Data.Product_link == "" {
+		return fmt.Sprintf("Failed to add usage: %s", string(body)), nil
+	}
+
+	return "", nil
 }
 
 type message struct {
