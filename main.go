@@ -393,7 +393,7 @@ func VerifyLicense(product string, license string, PayhipToken string, MaxLicens
 	json.Unmarshal([]byte(body), &data)
 	defer resp.Body.Close()
 
-	log.Warnln(log.Indent(data))
+	log.Debugln(log.Indent(data))
 
 	// Needs to be a valid key and have a buyer email
 	if data.Data.Enabled && data.Data.Buyer_email != "" {
@@ -442,7 +442,7 @@ func (m message) AddUsage(product string, license string, PayhipToken string) (s
 	json.Unmarshal([]byte(body), &data)
 	defer resp.Body.Close()
 
-	log.Warnln("Add Usage: ", log.Indent(data))
+	log.Debugln("Add Usage: ", log.Indent(data))
 
 	if data.Data.Product_link == "" {
 		return fmt.Sprintf("Failed to add usage: %s", string(body)), nil
