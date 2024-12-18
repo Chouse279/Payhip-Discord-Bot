@@ -1,4 +1,7 @@
 # Payhip-Discord-Bot
+
+[![Release Go project](https://github.com/McHauge/Payhip-Discord-Bot/actions/workflows/release_build.yml/badge.svg)](https://github.com/McHauge/Payhip-Discord-Bot/actions/workflows/release_build.yml)
+
 Open source Discord bot for Payhip, providing a way to automate sale verifications, very simple in its current form
 
 ***This app is in no way associated with [Payhip](https://payhip.com/), the company itself, and only relies on the public license API provided***
