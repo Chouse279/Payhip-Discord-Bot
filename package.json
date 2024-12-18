@@ -17,7 +17,8 @@
         "build_rpi": "cross-env GOOS=linux GOARCH=arm GOARM=6 go build -o bin/payhip-discord-bot-rpi-armv6",
         "build_docker": "go generate && docker build -t mchauge/payhip-discord-bot:stable .",
         "build_docker_beta": "go generate && docker build -t mchauge/payhip-discord-bot:beta .",
-        "docker_push": "docker push mchauge/payhip-discord-bot:stable"
+        "docker_push": "yarn build_docker && docker push mchauge/payhip-discord-bot:stable",
+        "docker_push_beta": "yarn build_docker_beta && docker push mchauge/payhip-discord-bot:beta"
     },
     "devDependencies": {
         "nodemon": "^2.0.7",

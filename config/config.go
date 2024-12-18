@@ -50,8 +50,7 @@ func ReadEnvConfig() {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		log.Warn("Error loading .env file, skipping...")
-		return
+		log.Warn("Error loading .env file, skipping... Checking for environment variables")
 	}
 
 	maxlicense, err := strconv.Atoi(os.Getenv("MAX_LICENSE_USES"))
@@ -65,7 +64,7 @@ func ReadEnvConfig() {
 		BotToken:       os.Getenv("BOT_TOKEN"),
 		GuildID:        os.Getenv("GUILD_ID"),
 		RoleID:         os.Getenv("ROLE_ID"),
-		RemoveCommands: os.Getenv("REMOVE_COMMANDS") == "true",
+		RemoveCommands: os.Getenv("REMOVE_COMMANDS") == "false", // Only set to true if it is true
 		MaxLicenseUses: int(maxlicense),
 	}
 
