@@ -5,12 +5,15 @@ on:
     #   tags:
     #     - '*'
 
-permissions:
-  contents: write
+permissions: read-all
 
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # To sign.
+      contents: write # To upload release assets.
+      actions: read   # To read workflow path.
     steps:
       -
         name: Checkout
@@ -22,6 +25,7 @@ jobs:
         uses: actions/setup-go@v5
       -
         name: Run GoReleaser
+        # either 'goreleaser' (default) or 'goreleaser-pro'
         uses: goreleaser/goreleaser-action@v6
         with:
           # either 'goreleaser' (default) or 'goreleaser-pro'
@@ -29,7 +33,7 @@ jobs:
           # 'latest', 'nightly', or a semver
           version: '~> v2'
           args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Your GoReleaser Pro key, if you are using the 'goreleaser-pro' distribution
           # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
