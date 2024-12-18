@@ -37,3 +37,23 @@ builds:
       - -trimpath
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X main.builtBy=goreleaser -X main.treeState={{ .IsGitDirty }}
+
+dockerhub:
+  - # Your hub.docker.com username. Must have 'editor' permissions
+    #
+    # Default: "{{ .Env.DOCKER_USERNAME }}".
+    # Templates: allowed.
+    username: "mchauge"
+
+    # Environment variable name to get the push token from.
+    # You might want to change it if you have multiple dockerhub configurations.
+    #
+    # Templates: allowed.
+    # Default: "DOCKER_PASSWORD".
+    secret_name: DOCKER_TOKEN
+
+    # Images to apply the description and/or full description to.
+    #
+    # Templates: allowed.
+    images:
+      - mchauge/payhip-discord-bot:stable
