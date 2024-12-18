@@ -1,0 +1,9 @@
+builds:
+  - id: "Build for all platforms"
+    env:
+      - CGO_ENABLED=0
+    # ldflags: -s -w
+    goos:
+      - linux
+      - darwin
+      - windows
