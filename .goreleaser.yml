@@ -18,7 +18,6 @@ builds:
       - darwin
       - windows
     goarch:
-      - "386"
       - amd64
       - arm
       - arm64
@@ -26,10 +25,15 @@ builds:
       # - riscv64
     goarm:
       - "7"
-    # Ignore arm for windows
+      - "6"
     ignore:
+      # Ignore arm for windows
       - goos: windows
         goarch: arm
+      # Ignore arm v4 for macos
+      - goos: darwin
+        goarch: arm
+        goarm: "6"
     mod_timestamp: "{{ .CommitTimestamp }}"
     flags:
       - -trimpath
