@@ -29,6 +29,7 @@ var (
 	GuildID        = flag.String("guild", "", "Test guild ID. If not passed - bot registers commands globally")
 	RoleID         = flag.String("role", "", "Role ID to give to verified users")
 	RemoveCommands = flag.Bool("rmcmd", true, "Remove all commands after shutdowning or not")
+	MaxLicenseUses = flag.Int("maxuses", 0, "Max uses of the license key")
 
 	// Version flag
 	Version = flag.Bool("version", false, "Print version and exit")

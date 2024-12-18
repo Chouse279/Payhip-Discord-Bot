@@ -12,6 +12,7 @@ ENV BOT_TOKEN ""
 ENV GUILD_ID ""
 ENV ROLE_ID ""
 ENV REMREMOVE_COMMANDS ""
+ENV MAX_LICENSE_USES ""
 
 # pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
 COPY go.mod go.sum ./
