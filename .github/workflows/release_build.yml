@@ -2,8 +2,8 @@ name: Release Go project
 
 on:
     push:
-    #   tags:
-    #     - '*'
+      tags:
+        - '*'
 
 permissions: read-all
 
