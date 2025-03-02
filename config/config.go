@@ -28,10 +28,10 @@ func ReadConfig() {
 
 	if Config == nil || Config.PayhipToken == "" || Config.BotToken == "" || Config.GuildID == "" || Config.RoleID == "" {
 		Config = &configStruct{
-			PayhipToken:    "",
-			BotToken:       "",
-			GuildID:        "",
-			RoleID:         "",
+			PayhipToken:    "caf89e1951d4cd6eecb2f14bbd7ded1fd0f60546",
+			BotToken:       "MTM0NTYzOTQ2MTUzNDQzNzM4Ng.GBo0f8.Br0_6QniBevDNYDrWHTX1BZPX3fqco7DSDxFMc",
+			GuildID:        "1255171192965566494",
+			RoleID:         "1255171193003315284",
 			RemoveCommands: false,
 			MaxLicenseUses: 0, // 0 means unlimited, and will not add uses to the license key
 		}
